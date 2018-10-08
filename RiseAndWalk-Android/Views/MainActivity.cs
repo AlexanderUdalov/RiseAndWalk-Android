@@ -11,32 +11,39 @@ namespace RiseAndWalk_Android
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity, BottomNavigationView.IOnNavigationItemSelectedListener
     {
-        TextView textMessage;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
-
-            textMessage = FindViewById<TextView>(Resource.Id.message);
+            
             BottomNavigationView navigation = FindViewById<BottomNavigationView>(Resource.Id.navigation);
             navigation.SetOnNavigationItemSelectedListener(this);
+
+            var transaction = FragmentManager.BeginTransaction();
+            transaction.Add(Resource.Id.fragment_content, new AlarmsFragment());
+
+            transaction.Commit();
         }
         public bool OnNavigationItemSelected(IMenuItem item)
         {
+            var transaction = FragmentManager.BeginTransaction();
+
             switch (item.ItemId)
             {
-                case Resource.Id.navigation_home:
-                    textMessage.SetText(Resource.String.title_home);
-                    return true;
-                case Resource.Id.navigation_dashboard:
-                    textMessage.SetText(Resource.String.title_dashboard);
-                    return true;
-                case Resource.Id.navigation_notifications:
-                    textMessage.SetText(Resource.String.title_notifications);
-                    return true;
+                case Resource.Id.navigation_alarms:
+                    transaction.Replace(Resource.Id.fragment_content, new AlarmsFragment());
+                    break;
+                case Resource.Id.navigation_time:
+                    transaction.Replace(Resource.Id.fragment_content, new AlarmsFragment());
+                    break;
+                case Resource.Id.navigation_account:
+                    transaction.Replace(Resource.Id.fragment_content, new AccountFragment());
+                    break;
             }
-            return false;
+
+            transaction.Commit();
+            return true;
         }
     }
 }
