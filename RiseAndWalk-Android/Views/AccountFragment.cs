@@ -11,7 +11,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 
-namespace RiseAndWalk_Android
+namespace RiseAndWalk_Android.Views
 {
     public class AccountFragment : Fragment
     {

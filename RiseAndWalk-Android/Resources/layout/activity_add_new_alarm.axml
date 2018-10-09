@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+	<TextView
+        android:text="Добавление нового будильника"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/text_add_new_alarm" />
+	<TextView
+		android:text="Время:"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:layout_below="@+id/text_add_new_alarm"
+		android:id="@+id/text_time" />
+	<TextView
+		android:text="20:00"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:layout_below="@+id/text_add_new_alarm"
+		android:layout_alignParentRight="true"
+		android:id="@+id/picker_time" />
+	<TextView
+		android:text="Дни недели:"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:layout_below="@+id/text_time"
+		android:id="@+id/text_day_of_week" />
+    <TextView
+        android:text="пн, пт, ср"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_below="@+id/text_time"
+		android:layout_alignParentRight="true"
+        android:id="@+id/picker_day_of_week" />
+	<TextView
+        android:text="Удалить после срабатывания"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_below="@+id/text_day_of_week"
+        android:id="@+id/text_switch" />
+	<android.support.v7.widget.SwitchCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:checked="false"
+		android:layout_alignParentRight="true"
+		android:layout_below="@+id/text_day_of_week"
+        android:id="@+id/switch_enabled"
+        app:showText="false"/>
+	
+
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/switch_enabled"
+        android:id="@+id/text_description" >
+		<EditText
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/text_input_description"
+			android:hint="Описание будильника" />
+	</android.support.design.widget.TextInputLayout>
+	<Button
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		style="@style/Widget.AppCompat.Button.Colored"
+		android:text="Добавить nfc метку"
+		android:layout_below="@+id/text_description"
+		android:id="@+id/button_add_nfc"
+	/>
+	
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        android:src="@drawable/alarm_plus"
+        app:elevation="4dp" />
+</RelativeLayout>

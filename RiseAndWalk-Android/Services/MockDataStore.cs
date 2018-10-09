@@ -1,4 +1,5 @@
-﻿using RiseAndWalk_Android.Models;
+﻿using Android.Nfc;
+using RiseAndWalk_Android.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,23 @@ namespace RiseAndWalk_Android.Services
             _alarms = new List<Alarm>();
             var mockAlarms = new List<Alarm>
             {
-                new Alarm { Id = Guid.NewGuid(), Description="This is an 1 Alarm description." },
-                new Alarm { Id = Guid.NewGuid(), Description="This is an 2 Alarm description." },
-                new Alarm { Id = Guid.NewGuid(), Description="This is an 3 Alarm description." },
-                new Alarm { Id = Guid.NewGuid(), Description="This is an 4 Alarm description." },
-                new Alarm { Id = Guid.NewGuid(), Description="This is an 5 Alarm description." },
-                new Alarm { Id = Guid.NewGuid(), Description="This is an 6 Alarm description." },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 1 Alarm description.", Time = new DateTime(2000,1,2,1,20,0) },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 2 Alarm description.", Time = new DateTime(2000,1,2,18,23,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 3 Alarm description.", Time = new DateTime(2000,1,2,10,0,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 4 Alarm description.", Time = new DateTime(2000,1,2,3,53,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 5 Alarm description.", Time = new DateTime(2000,1,2,7,47,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 6 Alarm description.", Time = new DateTime(2000,1,2,6,00,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 1 Alarm description.", Time = new DateTime(2000,1,2,1,20,0) },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 2 Alarm description.", Time = new DateTime(2000,1,2,18,23,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 3 Alarm description.", Time = new DateTime(2000,1,2,10,0,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 4 Alarm description.", Time = new DateTime(2000,1,2,3,53,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 5 Alarm description.", Time = new DateTime(2000,1,2,7,47,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 1 Alarm description.", Time = new DateTime(2000,1,2,1,20,0) },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 2 Alarm description.", Time = new DateTime(2000,1,2,18,23,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 3 Alarm description.", Time = new DateTime(2000,1,2,10,0,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 4 Alarm description.", Time = new DateTime(2000,1,2,3,53,0)  },
+                new Alarm { Id = Guid.NewGuid(), Description="This is an 5 Alarm description.", Time = new DateTime(2000,1,2,7,47,0)  },
+
             };
 
             foreach (var Alarm in mockAlarms)

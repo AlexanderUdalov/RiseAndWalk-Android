@@ -10,8 +10,9 @@ using Android.Widget;
 using RiseAndWalk_Android.Models;
 using RiseAndWalk_Android.ViewModels;
 using System.Linq;
+using Android.Content;
 
-namespace RiseAndWalk_Android
+namespace RiseAndWalk_Android.Views
 {
     public class AlarmsFragment : Fragment
     {
@@ -30,21 +31,24 @@ namespace RiseAndWalk_Android
             fabAddNewAlarm.Click += delegate { OnAddAlarmClicked(); };
 
             var alarmsView = _view.FindViewById<ListView>(Resource.Id.alarms_list);
-            alarmsView.Adapter = new ArrayAdapter(Activity, Android.Resource.Layout.SimpleListItem1,
-                _viewModel.Alarms
+
+            var alarmsList = _viewModel.Alarms
                     .GetItemsAsync()
                     .GetAwaiter()
                     .GetResult()
-                    .ToList());
+                    .ToList();
+
+            alarmsView.Adapter = new AlarmAdapter(alarmsList, Activity);
         }
 
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
             => _view;
-        
+
         public void OnAddAlarmClicked()
         {
-            Toast.MakeText(Context, "Add alarm", ToastLength.Long).Show();
+            var intent = new Intent(Context, typeof(AddNewAlarmActivity));
+            StartActivity(intent);
         }
     }
 }
