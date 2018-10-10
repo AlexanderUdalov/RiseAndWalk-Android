@@ -20,6 +20,6 @@ namespace RiseAndWalk_Android.Views
 
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-            => inflater.Inflate(Resource.Layout.account_fragment, container, false);
+            => inflater.Inflate(Resource.Layout.fragment_account, container, false);
     }
 }

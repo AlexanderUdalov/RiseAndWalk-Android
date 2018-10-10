@@ -25,7 +25,7 @@ namespace RiseAndWalk_Android.Views
 
             _viewModel = new AlarmsViewModel();
 
-            _view = LayoutInflater.Inflate(Resource.Layout.alarms_fragment, null);
+            _view = LayoutInflater.Inflate(Resource.Layout.fragment_alarms, null);
 
             var fabAddNewAlarm = _view.FindViewById(Resource.Id.fab_add);
             fabAddNewAlarm.Click += delegate { OnAddAlarmClicked(); };

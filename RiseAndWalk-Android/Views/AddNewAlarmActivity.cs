@@ -61,6 +61,8 @@ namespace RiseAndWalk_Android.Views
         private void OnAddNfcClicked()
         {
             Toast.MakeText(this, "Add nfc", ToastLength.Short).Show();
+            var intent = new Intent(this, typeof(NfcActivity));
+            StartActivity(intent);
         }
 
         private void OnSaveClicked()
