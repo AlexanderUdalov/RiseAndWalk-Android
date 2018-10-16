@@ -13,7 +13,6 @@ using Android.Widget;
 
 namespace RiseAndWalk_Android.Views
 {
-
     [Activity(Label = "NfcActivity")]
     class NfcActivity : Activity
     {
@@ -21,6 +20,9 @@ namespace RiseAndWalk_Android.Views
         private bool _inWriteMode;
         private NfcAdapter _nfcAdapter;
         private TextView _textView;
+
+        private string _nfcTagHash;
+        private string _cachedId;
 
         public event Action<string> OnNfcTagDetected;
 
@@ -30,14 +32,39 @@ namespace RiseAndWalk_Android.Views
             SetContentView(Resource.Layout.activity_read_nfc);
 
             _nfcAdapter = NfcAdapter.GetDefaultAdapter(this);
-            //EnableWriteMode();
 
             _textView = FindViewById<TextView>(Resource.Id.text_nfc_tag);
 
+            var acceptTagButton = FindViewById<TextView>(Resource.Id.button_accept_nfc_tag);
+            acceptTagButton.Click += delegate { OnAcceptTag(); };
+
             OnNfcTagDetected += (id) =>
             {
+                if (id.Equals(_cachedId))
+                {
+                    Vibrator vibrator = (Vibrator)GetSystemService(VibratorService);
+                    vibrator.Vibrate(VibrationEffect.CreateOneShot(100, VibrationEffect.DefaultAmplitude));
+                }
+                _cachedId = id;
+                _nfcTagHash = id;
                 _textView.Text = id;
             };
+        }
+
+        private void OnAcceptTag()
+        {
+            Intent intent = new Intent();
+            if (string.IsNullOrEmpty(_nfcTagHash))
+            {
+                SetResult(Result.Canceled, intent);
+                Finish();
+            }
+            else
+            {
+                intent.PutExtra("nfcTagHash", _nfcTagHash);
+                SetResult(Result.Ok, intent);
+                Finish();
+            }
         }
 
         private void EnableWriteMode()
@@ -71,11 +98,13 @@ namespace RiseAndWalk_Android.Views
                 _inWriteMode = false;
                 var tag = intent.GetParcelableExtra(NfcAdapter.ExtraTag) as Tag;
 
-                StringBuilder hex = new StringBuilder();
-                foreach (byte b in tag.GetId())
-                    hex.AppendFormat("{0:x2}", b);
+                using (var sha = new System.Security.Cryptography.SHA256Managed())
+                {
+                    byte[] hash = sha.ComputeHash(tag.GetId());
+                    var hashString = BitConverter.ToString(hash).Replace("-", "");
 
-                OnNfcTagDetected?.Invoke(hex.ToString());
+                    OnNfcTagDetected?.Invoke(hashString);
+                }
                 return;
             }
         }

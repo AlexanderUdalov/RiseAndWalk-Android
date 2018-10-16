@@ -2,21 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
+	android:id="@+id/login_container"
     android:layout_height="match_parent">
-	
-	<TextView
-		android:text="Тут будет ID метки"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:id="@+id/text_nfc_tag"
-		/>
 	<Button
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		style="@style/Widget.AppCompat.Button.Colored"
-		android:text="Использовать эту метку"
-		android:layout_alignParentRight="true"
-		android:layout_alignParentBottom="true"
-		android:id="@+id/button_accept_nfc_tag"
+		android:text="Войти"
+		android:layout_centerInParent="true"
+		android:id="@+id/button_login"
+	/>
+	<Button
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		style="@style/Widget.AppCompat.Button.Colored"
+		android:text="Регистрация"
+		android:layout_below="@+id/button_login"
+		android:id="@+id/button_register"
 	/>
 </RelativeLayout>

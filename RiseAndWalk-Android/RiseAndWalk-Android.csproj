@@ -59,7 +59,11 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ViewModels\AlarmsViewModel.cs" />
+    <Compile Include="Controllers\AlarmServiceController.cs" />
+    <Compile Include="Controllers\AlarmStoreController.cs" />
+    <Compile Include="Controllers\DialogController.cs" />
+    <Compile Include="Controllers\NetworkController.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Views\AccountFragment.cs" />
     <Compile Include="Models\Alarm.cs" />
     <Compile Include="Services\AzureDataStore.cs" />
@@ -68,8 +72,9 @@
     <Compile Include="Views\AddNewAlarmActivity.cs" />
     <Compile Include="Views\AlarmAdapter.cs" />
     <Compile Include="Views\AlarmsFragment.cs" />
+    <Compile Include="Views\HelloActivity.cs" />
+    <Compile Include="Views\LoginFragment.cs" />
     <Compile Include="Views\MainActivity.cs" />
-    <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\NfcActivity.cs" />
   </ItemGroup>
@@ -116,6 +121,9 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
+    <PackageReference Include="System.Net.Http">
+      <Version>4.3.4</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +151,16 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_read_nfc.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_login.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_hello.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

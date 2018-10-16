@@ -11,122 +11,88 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using RiseAndWalk_Android.Controllers;
 using RiseAndWalk_Android.Models;
 
 namespace RiseAndWalk_Android.Views
 {
+    //TODO: maybe change to async?
     [Activity(Label = "AddNewAlarmActivity")]
     public class AddNewAlarmActivity : Activity
     {
-        public static String MIME_TEXT_PLAIN = "text/plain";
-        public static String TAG = "NfcDemo";
-
-        private Dialog _dayOfWeekDialog;
-        private Dialog _timePickerDialog;
+        private Button _buttonAddNfc;
+        private TextView _description, _time, _daysOfWeek;
 
         private Alarm _newAlarm;
-
-        private bool _dialogShowed = false;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_add_new_alarm);
 
+            _newAlarm = new Alarm();
 
-            var description = FindViewById<TextView>(Resource.Id.text_input_description);
-            var daysOfWeek = FindViewById<TextView>(Resource.Id.picker_day_of_week);
-            var time = FindViewById<TextView>(Resource.Id.picker_time);
-            var addNfcButton = FindViewById<Button>(Resource.Id.button_add_nfc);
+            _description = FindViewById<TextView>(Resource.Id.text_input_description);
+            
+            _buttonAddNfc = FindViewById<Button>(Resource.Id.button_add_nfc);
+            _buttonAddNfc.Click += delegate { OnAddNfcClicked(); };
+
             var saveButton = FindViewById(Resource.Id.fab_save);
-
-            daysOfWeek.Click += delegate
-            {
-                if (!_dialogShowed)
-                    ShowDayOfWeekDialog(this);
-            };
-
-            time.Text = DateTime.Now.ToString("hh:mm");
-            time.Click += delegate
-            {
-                if (!_dialogShowed)
-                    ShowTimePickerDialog(this);
-            };
-
-            addNfcButton.Click += delegate { OnAddNfcClicked(); };
             saveButton.Click += delegate { OnSaveClicked(); };
+            
+            _daysOfWeek = FindViewById<TextView>(Resource.Id.picker_day_of_week);
+            _daysOfWeek.Click += delegate { DialogController.Instance.ShowDayOfWeekDialog(this, OnDayOfWeekSet); };
+            
+            _time = FindViewById<TextView>(Resource.Id.picker_time);
+            _time.Text = DateTime.Now.ToString("HH:mm");
+            _time.Click += delegate { DialogController.Instance.ShowTimePickerDialog(this, OnTimeSet); };
         }
-
-
+        
         private void OnAddNfcClicked()
         {
-            Toast.MakeText(this, "Add nfc", ToastLength.Short).Show();
             var intent = new Intent(this, typeof(NfcActivity));
-            StartActivity(intent);
+            StartActivityForResult(intent, 0);
         }
 
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
+        {
+            if (resultCode != Result.Ok) return;
+
+            _newAlarm.NfcTagHash = data.GetStringExtra("nfcTagHash");
+            _buttonAddNfc.Text = GetString(Resource.String.change_nfc_tag);
+        }
+    
         private void OnSaveClicked()
         {
-            Toast.MakeText(this, "Save", ToastLength.Short).Show();
+            _newAlarm.Description = _description.Text;
+            _newAlarm.Id = Guid.NewGuid();
+            _newAlarm.Enabled = true;
+
+            AlarmStoreController.Instance.DataStore.AddItemAsync(_newAlarm).Wait();
+
+            AlarmServiceController.Instance.EnableAlarm(this, _newAlarm);
             Finish();
         }
 
-        private void ShowTimePickerDialog(Context context)
+        private void OnTimeSet(object sender, TimePickerDialog.TimeSetEventArgs args)
         {
-            _dialogShowed = true;
-            if (_timePickerDialog == null) CreateTimePickerDialog(context);
+            _newAlarm.Time = new DateTime(
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                args.HourOfDay,
+                args.Minute, 0);
 
-            _timePickerDialog.Show();
-        }
-
-        private void CreateTimePickerDialog(Context context)
-        {
-            _timePickerDialog = new TimePickerDialog(
-                context,
-                delegate
-                {
-                    _dialogShowed = false;
-                },
-                DateTime.Now.Hour,
-                DateTime.Now.Minute,
-                true);
-
-            _timePickerDialog.CancelEvent += delegate
-            {
-                _dialogShowed = false;
-            };
-        }
-
-        public void ShowDayOfWeekDialog(Context context)
-        {
-            _dialogShowed = true;
-            if (_dayOfWeekDialog == null) CreateDayOfWeekDialog(context);
-
-            _dayOfWeekDialog.Show();
-        }
-
-        private void CreateDayOfWeekDialog(Context context)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.SetTitle("Choose some animals");
-
-            string[] animals = { "Понедельник", "Писос", "camel", "sheep", "goat" };
-            bool[] checkedItems = { true, false, false, true, false };
-
-            builder.SetMultiChoiceItems(animals, checkedItems, delegate {
-                _dialogShowed = false;
-            });
-
-            builder.SetPositiveButton("OK", delegate { });
-            builder.SetNegativeButton("Cancel", delegate { });
-
-            _dayOfWeekDialog = builder.Create();
-
-            _dayOfWeekDialog.DismissEvent += delegate
-            {
-                _dialogShowed = false;
-            };
+            _time.Text = _newAlarm.Time.ToString("HH:mm");
         }
         
+        private void OnDayOfWeekSet(List<int> choosedItems)
+        {
+            if (choosedItems.Count > 7) throw new ArgumentException();
+
+            _newAlarm.DaysOfWeek = choosedItems.Cast<DayOfWeek>().ToArray();
+
+            _daysOfWeek.Text = _newAlarm.GetDaysOfWeekString(this);
+        }
     }
 }

@@ -8,22 +8,20 @@ using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Widget;
 using RiseAndWalk_Android.Models;
-using RiseAndWalk_Android.ViewModels;
 using System.Linq;
 using Android.Content;
+using RiseAndWalk_Android.Controllers;
 
 namespace RiseAndWalk_Android.Views
 {
     public class AlarmsFragment : Fragment
     {
-        private AlarmsViewModel _viewModel;
         private View _view;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            _viewModel = new AlarmsViewModel();
+            
 
             _view = LayoutInflater.Inflate(Resource.Layout.fragment_alarms, null);
 
@@ -32,7 +30,7 @@ namespace RiseAndWalk_Android.Views
 
             var alarmsView = _view.FindViewById<ListView>(Resource.Id.alarms_list);
 
-            var alarmsList = _viewModel.Alarms
+            var alarmsList = AlarmStoreController.Instance.DataStore
                     .GetItemsAsync()
                     .GetAwaiter()
                     .GetResult()

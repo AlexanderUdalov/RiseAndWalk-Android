@@ -52,10 +52,10 @@ namespace RiseAndWalk_Android.Views
 
             var current = Alarms[position];
 
-            nfcImage.Enabled = current.NfcTag == null;
+            nfcImage.Enabled = current.NfcTagHash == null;
             description.Text = current.Description;
 
-            daysOfWeek.Text = current.GetDaysOfWeekString();
+            daysOfWeek.Text = current.GetDaysOfWeekString(parent.Context);
             daysOfWeek.Click += delegate 
             {
                 if (!_dialogShowed)

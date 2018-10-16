@@ -3,4 +3,22 @@
     <string name="title_alarms">Alarms</string>
     <string name="title_time">Time</string>
     <string name="title_account">Account</string>
+    <string name="choose_day_of_week">Выберите день недели</string>
+    <string name="mon">Понедельник</string>
+    <string name="tue">Вторник</string>
+    <string name="wed">Среда</string>
+    <string name="thu">Четверг</string>
+    <string name="fri">Пятница</string>
+    <string name="sat">Субботы</string>
+    <string name="sun">Воскресенье</string>
+  <string name="mon_short">пн</string>
+  <string name="tue_short">вт</string>
+  <string name="wed_short">ср</string>
+  <string name="thu_short">чт</string>
+  <string name="fri_short">пт</string>
+  <string name="sat_short">сб</string>
+  <string name="sun_short">вс</string>
+    <string name="everyday">Ежедневно</string>
+    <string name="onetime">Однократно</string>
+   <string name="change_nfc_tag">Изменить тег</string>
 </resources>
