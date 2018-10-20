@@ -59,6 +59,7 @@
     <Reference Include="Mono.Android" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\AlarmReceiver.cs" />
     <Compile Include="Controllers\AlarmServiceController.cs" />
     <Compile Include="Controllers\AlarmStoreController.cs" />
     <Compile Include="Controllers\DialogController.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Views\MainActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\NfcActivity.cs" />
+    <Compile Include="Views\RingingAlarmActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

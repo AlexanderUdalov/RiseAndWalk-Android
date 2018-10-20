@@ -1,10 +1,7 @@
-﻿using System;
+﻿using RiseAndWalk_Android.Models;
+using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using RiseAndWalk_Android.Models;
 
 namespace RiseAndWalk_Android.Services
 {

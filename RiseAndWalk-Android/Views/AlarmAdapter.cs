@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Java.Lang;
 using RiseAndWalk_Android.Models;
+using System;
+using System.Collections.Generic;
 
 namespace RiseAndWalk_Android.Views
 {
-    class AlarmAdapter : BaseAdapter<Alarm>
+    internal class AlarmAdapter : BaseAdapter<Alarm>
     {
         public List<Alarm> Alarms { get; }
 
@@ -56,7 +50,7 @@ namespace RiseAndWalk_Android.Views
             description.Text = current.Description;
 
             daysOfWeek.Text = current.GetDaysOfWeekString(parent.Context);
-            daysOfWeek.Click += delegate 
+            daysOfWeek.Click += delegate
             {
                 if (!_dialogShowed)
                     ShowDayOfWeekDialog(parent.Context);
@@ -68,7 +62,7 @@ namespace RiseAndWalk_Android.Views
                 if (!_dialogShowed)
                     ShowTimePickerDialog(parent.Context);
             };
-            
+
             switchEnabled.CheckedChange += delegate
             {
                 Toast.MakeText(parent.Context, $"OnAlarm[{position}]StateChanged", ToastLength.Short).Show();
@@ -88,7 +82,7 @@ namespace RiseAndWalk_Android.Views
         private void CreateTimePickerDialog(Context context)
         {
             _timePickerDialog = new TimePickerDialog(
-                context, 
+                context,
                 delegate
                 {
                     _dialogShowed = false;
@@ -119,7 +113,8 @@ namespace RiseAndWalk_Android.Views
             string[] animals = { "Понедельник", "Писос", "camel", "sheep", "goat" };
             bool[] checkedItems = { true, false, false, true, false };
 
-            builder.SetMultiChoiceItems(animals, checkedItems, delegate {
+            builder.SetMultiChoiceItems(animals, checkedItems, delegate
+            {
                 _dialogShowed = false;
             });
 
@@ -127,7 +122,7 @@ namespace RiseAndWalk_Android.Views
             builder.SetNegativeButton("Cancel", delegate { });
 
             _dayOfWeekDialog = builder.Create();
-            
+
             _dayOfWeekDialog.DismissEvent += delegate
             {
                 _dialogShowed = false;

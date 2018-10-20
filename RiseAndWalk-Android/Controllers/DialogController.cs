@@ -9,11 +9,13 @@ namespace RiseAndWalk_Android.Controllers
     public class DialogController
     {
         #region Singletone
+
         private static readonly Lazy<DialogController> _instanceHolder =
             new Lazy<DialogController>(() => new DialogController());
-        
+
         public static DialogController Instance => _instanceHolder.Value;
-        #endregion
+
+        #endregion Singletone
 
         private Dialog _timePickerDialog;
         private Dialog _dayOfWeekPickerDialog;
@@ -50,7 +52,7 @@ namespace RiseAndWalk_Android.Controllers
             string[] items = new string[9];
 
             bool[] checkedItems = new bool[9];
-            for(int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)
                 checkedItems[i] = false;
             checkedItems[8] = true;
 
@@ -64,7 +66,7 @@ namespace RiseAndWalk_Android.Controllers
             items[7] = context.GetString(Resource.String.everyday);
             items[8] = context.GetString(Resource.String.onetime);
 
-            builder.SetMultiChoiceItems(items, checkedItems, 
+            builder.SetMultiChoiceItems(items, checkedItems,
                 (object sender, DialogMultiChoiceClickEventArgs args) =>
                 {
                     if (args.Which < 6)
@@ -100,11 +102,13 @@ namespace RiseAndWalk_Android.Controllers
                 });
 
             //TODO: Разобраться с кнопками и их событиями
-            builder.SetPositiveButton("OK", delegate {
+            builder.SetPositiveButton("OK", delegate
+            {
                 callback.Invoke(choosedItems);
                 _dialogShowed = false;
             });
-            builder.SetNegativeButton("Cancel", delegate {
+            builder.SetNegativeButton("Cancel", delegate
+            {
                 callback.Invoke(new List<int>());
                 _dialogShowed = false;
             });
@@ -117,10 +121,11 @@ namespace RiseAndWalk_Android.Controllers
             };
             return dayOfWeekPickerDialog;
         }
-        
+
         private TimePickerDialog CreateTimePickerDialog(Context context, EventHandler<TimeSetEventArgs> handler)
         {
-            var dialog = new TimePickerDialog(context, (object sender, TimeSetEventArgs args) => {
+            var dialog = new TimePickerDialog(context, (object sender, TimeSetEventArgs args) =>
+            {
                 handler(sender, args);
                 _dialogShowed = false;
             }, DateTime.Now.Hour, DateTime.Now.Minute, true);

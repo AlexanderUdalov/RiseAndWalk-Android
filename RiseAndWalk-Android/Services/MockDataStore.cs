@@ -1,5 +1,4 @@
-﻿using Android.Nfc;
-using RiseAndWalk_Android.Models;
+﻿using RiseAndWalk_Android.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,6 @@ namespace RiseAndWalk_Android.Services
             _alarms = new List<Alarm>();
             var mockAlarms = new List<Alarm>
             {
-                
             };
 
             foreach (var Alarm in mockAlarms)

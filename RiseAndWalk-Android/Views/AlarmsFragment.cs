@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Android.App;
+﻿using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Views;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
 using Android.Widget;
-using RiseAndWalk_Android.Models;
-using System.Linq;
-using Android.Content;
 using RiseAndWalk_Android.Controllers;
+using System.Linq;
 
 namespace RiseAndWalk_Android.Views
 {
@@ -21,7 +15,6 @@ namespace RiseAndWalk_Android.Views
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            
 
             _view = LayoutInflater.Inflate(Resource.Layout.fragment_alarms, null);
 
@@ -38,7 +31,6 @@ namespace RiseAndWalk_Android.Views
 
             alarmsView.Adapter = new AlarmAdapter(alarmsList, Activity);
         }
-
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
             => _view;

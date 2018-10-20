@@ -2,18 +2,17 @@
 using Android.Content;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
-using Android.Widget;
 
 namespace RiseAndWalk_Android.Views
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity, BottomNavigationView.IOnNavigationItemSelectedListener
     {
-        ISharedPreferencesEditor _prefsEditor;
+        private ISharedPreferencesEditor _prefsEditor;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -51,13 +50,15 @@ namespace RiseAndWalk_Android.Views
                 case Resource.Id.navigation_alarms:
                     transaction.Replace(Resource.Id.fragment_content, new AlarmsFragment());
                     break;
+
                 case Resource.Id.navigation_time:
                     transaction.Replace(Resource.Id.fragment_content, new AlarmsFragment());
                     break;
+
                 case Resource.Id.navigation_account:
                     var token = PreferenceManager.GetDefaultSharedPreferences(this).GetString("userToken", "");
-                    transaction.Replace(Resource.Id.fragment_content, 
-                        string.IsNullOrEmpty(token)? (Fragment) new LoginFragment(): new AccountFragment());
+                    transaction.Replace(Resource.Id.fragment_content,
+                        string.IsNullOrEmpty(token) ? (Fragment)new LoginFragment() : new AccountFragment());
                     break;
             }
 
@@ -66,4 +67,3 @@ namespace RiseAndWalk_Android.Views
         }
     }
 }
-

@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.Nfc;
 using Android.OS;
-using Android.Runtime;
-using Android.Views;
 using Android.Widget;
+using System;
 
 namespace RiseAndWalk_Android.Views
 {
     [Activity(Label = "NfcActivity")]
-    class NfcActivity : Activity
+    internal class NfcActivity : Activity
     {
-
         private bool _inWriteMode;
         private NfcAdapter _nfcAdapter;
         private TextView _textView;
@@ -70,10 +63,10 @@ namespace RiseAndWalk_Android.Views
         private void EnableWriteMode()
         {
             _inWriteMode = true;
-            
+
             var tagDetected = new IntentFilter(NfcAdapter.ActionTagDiscovered);
             var filters = new[] { tagDetected };
-            
+
             var intent = new Intent(this, GetType()).AddFlags(ActivityFlags.SingleTop);
             var pendingIntent = PendingIntent.GetActivity(this, 0, intent, 0);
 
@@ -82,7 +75,8 @@ namespace RiseAndWalk_Android.Views
                 var alert = new AlertDialog.Builder(this).Create();
                 alert.SetMessage("NFC is not supported on this device.");
                 alert.SetTitle("NFC Unavailable");
-                alert.SetButton("OK", delegate {
+                alert.SetButton("OK", delegate
+                {
                     _textView.Text = "NFC is not supported on this device.";
                 });
                 alert.Show();

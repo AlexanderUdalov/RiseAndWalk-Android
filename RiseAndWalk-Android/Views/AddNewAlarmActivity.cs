@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content;
-using Android.Nfc;
-using Android.Nfc.Tech;
 using Android.OS;
 using Android.Runtime;
-using Android.Views;
 using Android.Widget;
 using RiseAndWalk_Android.Controllers;
 using RiseAndWalk_Android.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RiseAndWalk_Android.Views
 {
@@ -33,21 +28,21 @@ namespace RiseAndWalk_Android.Views
             _newAlarm = new Alarm();
 
             _description = FindViewById<TextView>(Resource.Id.text_input_description);
-            
+
             _buttonAddNfc = FindViewById<Button>(Resource.Id.button_add_nfc);
             _buttonAddNfc.Click += delegate { OnAddNfcClicked(); };
 
             var saveButton = FindViewById(Resource.Id.fab_save);
             saveButton.Click += delegate { OnSaveClicked(); };
-            
+
             _daysOfWeek = FindViewById<TextView>(Resource.Id.picker_day_of_week);
             _daysOfWeek.Click += delegate { DialogController.Instance.ShowDayOfWeekDialog(this, OnDayOfWeekSet); };
-            
+
             _time = FindViewById<TextView>(Resource.Id.picker_time);
             _time.Text = DateTime.Now.ToString("HH:mm");
             _time.Click += delegate { DialogController.Instance.ShowTimePickerDialog(this, OnTimeSet); };
         }
-        
+
         private void OnAddNfcClicked()
         {
             var intent = new Intent(this, typeof(NfcActivity));
@@ -61,7 +56,7 @@ namespace RiseAndWalk_Android.Views
             _newAlarm.NfcTagHash = data.GetStringExtra("nfcTagHash");
             _buttonAddNfc.Text = GetString(Resource.String.change_nfc_tag);
         }
-    
+
         private void OnSaveClicked()
         {
             _newAlarm.Description = _description.Text;
@@ -85,7 +80,7 @@ namespace RiseAndWalk_Android.Views
 
             _time.Text = _newAlarm.Time.ToString("HH:mm");
         }
-        
+
         private void OnDayOfWeekSet(List<int> choosedItems)
         {
             if (choosedItems.Count > 7) throw new ArgumentException();

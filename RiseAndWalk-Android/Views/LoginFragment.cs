@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-
-using Android.App;
-using Android.Content;
+﻿using Android.App;
 using Android.OS;
 using Android.Preferences;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Newtonsoft.Json;
+using System;
+using System.Net.Http;
+using System.Text;
 
 namespace RiseAndWalk_Android.Views
 {
     public class LoginFragment : Fragment
     {
         private View _view;
+
         public event Action OnCreateCallBack;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -52,7 +47,7 @@ namespace RiseAndWalk_Android.Views
             }
         }
 
-        class RegisterData
+        private class RegisterData
         {
             public string Email;
             public string Password;
@@ -81,7 +76,6 @@ namespace RiseAndWalk_Android.Views
 
             if (postResponse.IsSuccessStatusCode)
             {
-
                 Toast.MakeText(_view.Context, content, ToastLength.Short).Show();
                 var token = content;
                 if (!string.IsNullOrEmpty(token))
@@ -112,7 +106,6 @@ namespace RiseAndWalk_Android.Views
 
             if (postResponse.IsSuccessStatusCode)
             {
-
                 Toast.MakeText(_view.Context, content, ToastLength.Short).Show();
                 var token = content;
                 if (!string.IsNullOrEmpty(token))
@@ -128,7 +121,7 @@ namespace RiseAndWalk_Android.Views
 
         public void AddCloseButton(Activity closingActivity)
         {
-            var viewGroup = (RelativeLayout) _view.FindViewById(Resource.Id.login_container);
+            var viewGroup = (RelativeLayout)_view.FindViewById(Resource.Id.login_container);
 
             Button bt = new Button(_view.Context);
             bt.SetText("Закрыть это", TextView.BufferType.Normal);
