@@ -65,14 +65,14 @@
         android:checked="false"
 		android:layout_alignParentRight="true"
 		android:layout_below="@+id/text_day_of_week"
-        android:id="@+id/switch_enabled"
+        android:id="@+id/switch_delete_after_ringing"
         app:showText="false"/>
 	
 
 	<android.support.design.widget.TextInputLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/switch_enabled"
+		android:layout_below="@+id/switch_delete_after_ringing"
         android:id="@+id/text_description" >
 		<EditText
 			android:layout_width="fill_parent"

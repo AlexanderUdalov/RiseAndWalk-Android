@@ -64,15 +64,15 @@
     <Compile Include="Controllers\AlarmStoreController.cs" />
     <Compile Include="Controllers\DialogController.cs" />
     <Compile Include="Controllers\NetworkController.cs" />
+    <Compile Include="Models\SQLiteDatabase.cs" />
+    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Views\AccountFragment.cs" />
     <Compile Include="Models\Alarm.cs" />
-    <Compile Include="Services\AzureDataStore.cs" />
-    <Compile Include="Services\IDataStore.cs" />
-    <Compile Include="Services\MockDataStore.cs" />
     <Compile Include="Views\AddNewAlarmActivity.cs" />
     <Compile Include="Views\AlarmAdapter.cs" />
     <Compile Include="Views\AlarmsFragment.cs" />
+    <Compile Include="Views\BaseNfcReaderActivity.cs" />
     <Compile Include="Views\HelloActivity.cs" />
     <Compile Include="Views\LoginFragment.cs" />
     <Compile Include="Views\MainActivity.cs" />
@@ -123,6 +123,9 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
+    <PackageReference Include="sqlite-net-pcl">
+      <Version>1.5.231</Version>
+    </PackageReference>
     <PackageReference Include="System.Net.Http">
       <Version>4.3.4</Version>
     </PackageReference>
@@ -163,6 +166,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_hello.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_ringing_alarm.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

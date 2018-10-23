@@ -1,24 +1,27 @@
 ﻿using Android.Content;
 using System;
 using System.Linq;
+using SQLite;
 
 namespace RiseAndWalk_Android.Models
 {
     public class Alarm
     {
-        public Guid Id;
-        public DateTime Time;
-        public string Description;
+        [PrimaryKey]
+        public Guid Id { get; set; }
+        public TimeSpan Time { get; set; }
+        public string Description { get; set; }
         public DayOfWeek[] DaysOfWeek;
-        public string NfcTagHash;
-        public bool Enabled;
+        public string NfcTagHash { get; set; }
+        public bool Enabled { get; set; }
+        public bool DeleteAfterRinging { get; set; }
 
         public string GetDaysOfWeekString(Context context)
         {
             return DaysOfWeek == null || DaysOfWeek.Length == 0 ?
-                "" :
+                context.GetString(Resource.String.onetime) :
                 string.Join(", ", DaysOfWeek
-                    .Select((x) => DayOfWeekToResourceString(x, context))
+                    .Select(x => DayOfWeekToResourceString(x, context))
                     .ToArray());
         }
 

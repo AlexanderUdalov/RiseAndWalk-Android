@@ -17,6 +17,7 @@ namespace RiseAndWalk_Android.Views
     {
         private Button _buttonAddNfc;
         private TextView _description, _time, _daysOfWeek;
+        private Android.Support.V7.Widget.SwitchCompat _deleteAfterRinging;
 
         private Alarm _newAlarm;
 
@@ -27,6 +28,7 @@ namespace RiseAndWalk_Android.Views
 
             _newAlarm = new Alarm();
 
+            _deleteAfterRinging = FindViewById<Android.Support.V7.Widget.SwitchCompat>(Resource.Id.switch_delete_after_ringing);
             _description = FindViewById<TextView>(Resource.Id.text_input_description);
 
             _buttonAddNfc = FindViewById<Button>(Resource.Id.button_add_nfc);
@@ -36,6 +38,7 @@ namespace RiseAndWalk_Android.Views
             saveButton.Click += delegate { OnSaveClicked(); };
 
             _daysOfWeek = FindViewById<TextView>(Resource.Id.picker_day_of_week);
+            _daysOfWeek.Text = _newAlarm.GetDaysOfWeekString(this);
             _daysOfWeek.Click += delegate { DialogController.Instance.ShowDayOfWeekDialog(this, OnDayOfWeekSet); };
 
             _time = FindViewById<TextView>(Resource.Id.picker_time);
@@ -61,9 +64,10 @@ namespace RiseAndWalk_Android.Views
         {
             _newAlarm.Description = _description.Text;
             _newAlarm.Id = Guid.NewGuid();
+            _newAlarm.DeleteAfterRinging = _deleteAfterRinging.Checked;
             _newAlarm.Enabled = true;
 
-            AlarmStoreController.Instance.DataStore.AddItemAsync(_newAlarm).Wait();
+            AlarmStoreController.Instance.AddAlarm(_newAlarm);
 
             AlarmServiceController.Instance.EnableAlarm(this, _newAlarm);
             Finish();
@@ -71,14 +75,9 @@ namespace RiseAndWalk_Android.Views
 
         private void OnTimeSet(object sender, TimePickerDialog.TimeSetEventArgs args)
         {
-            _newAlarm.Time = new DateTime(
-                DateTime.Now.Year,
-                DateTime.Now.Month,
-                DateTime.Now.Day,
-                args.HourOfDay,
-                args.Minute, 0);
+            _newAlarm.Time = new TimeSpan(args.HourOfDay, args.Minute, 0);
 
-            _time.Text = _newAlarm.Time.ToString("HH:mm");
+            _time.Text = _newAlarm.Time.ToString(@"hh\:mm");
         }
 
         private void OnDayOfWeekSet(List<int> choosedItems)

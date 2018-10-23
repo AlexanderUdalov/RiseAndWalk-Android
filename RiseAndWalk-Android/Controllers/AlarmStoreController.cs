@@ -1,6 +1,6 @@
 ﻿using RiseAndWalk_Android.Models;
-using RiseAndWalk_Android.Services;
 using System;
+using System.Collections.Generic;
 
 namespace RiseAndWalk_Android.Controllers
 {
@@ -11,18 +11,45 @@ namespace RiseAndWalk_Android.Controllers
         private static readonly Lazy<AlarmStoreController> _instanceHolder =
              new Lazy<AlarmStoreController>(() => new AlarmStoreController());
 
-        public static AlarmStoreController Instance
-        {
-            get
-            {
-                if (_instanceHolder.Value.DataStore == null)
-                    _instanceHolder.Value.DataStore = new MockDataStore();
-                return _instanceHolder.Value;
-            }
-        }
+        public static AlarmStoreController Instance => _instanceHolder.Value;
 
         #endregion Singletone
 
-        public IDataStore<Alarm> DataStore;// => DataStore ?? new MockDataStore();
+        public Action OnDataStoreChanged;
+        private readonly SQLiteDatabase<Alarm> _db = new SQLiteDatabase<Alarm>("UserAlarms");
+
+        public IEnumerable<Alarm> GetAlarms() => _db.Get();
+
+        public void AddAlarm(Alarm alarm)
+        {
+            foreach (var alarm1 in GetAlarms())
+            {
+                _db.Delete(alarm1);
+            }
+            _db.Add(alarm);
+            OnDataStoreChanged?.Invoke();
+        }
+
+        public void DeleteAlarm(Alarm alarm)
+        {
+            _db.Delete(alarm);
+            OnDataStoreChanged?.Invoke();
+        }
+
+        public void UpdateAlarm(Alarm alarm)
+        {
+            _db.Update(alarm);
+            OnDataStoreChanged?.Invoke();
+        }
+        
+        //TODO: доделать
+        public void DeleteOrRepeatRingingAlarm(string ringingAlarmId)
+        {
+            var guid = Guid.Parse(ringingAlarmId);
+            if (_db.Get(guid) == null) return;
+
+
+            _db.Delete(guid);
+        }
     }
 }

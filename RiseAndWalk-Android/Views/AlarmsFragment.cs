@@ -5,6 +5,7 @@ using Android.Views;
 using Android.Widget;
 using RiseAndWalk_Android.Controllers;
 using System.Linq;
+using SQLite;
 
 namespace RiseAndWalk_Android.Views
 {
@@ -23,22 +24,25 @@ namespace RiseAndWalk_Android.Views
 
             var alarmsView = _view.FindViewById<ListView>(Resource.Id.alarms_list);
 
-            var alarmsList = AlarmStoreController.Instance.DataStore
-                    .GetItemsAsync()
-                    .GetAwaiter()
-                    .GetResult()
-                    .ToList();
 
-            alarmsView.Adapter = new AlarmAdapter(alarmsList, Activity);
+            alarmsView.Adapter = GetNewAlarmAdapter();
+            AlarmStoreController.Instance.OnDataStoreChanged += () => alarmsView.Adapter = GetNewAlarmAdapter();
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
             => _view;
 
-        public void OnAddAlarmClicked()
+        private void OnAddAlarmClicked()
         {
             var intent = new Intent(Context, typeof(AddNewAlarmActivity));
             StartActivity(intent);
+        }
+        
+        private AlarmAdapter GetNewAlarmAdapter()
+        {
+            var alarmsList = AlarmStoreController.Instance.GetAlarms();
+
+            return new AlarmAdapter(alarmsList.ToList(), Activity);
         }
     }
 }

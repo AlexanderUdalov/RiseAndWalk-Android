@@ -1,10 +1,11 @@
-﻿using Android.App;
-using Android.Content;
+﻿using Android.Content;
 using Android.Views;
 using Android.Widget;
+using RiseAndWalk_Android.Controllers;
 using RiseAndWalk_Android.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RiseAndWalk_Android.Views
 {
@@ -12,12 +13,7 @@ namespace RiseAndWalk_Android.Views
     {
         public List<Alarm> Alarms { get; }
 
-        private Context _context;
-
-        private Dialog _dayOfWeekDialog;
-        private Dialog _timePickerDialog;
-
-        private bool _dialogShowed = false;
+        private readonly Context _context;
 
         public AlarmAdapter(List<Alarm> alarms, Context context)
         {
@@ -33,100 +29,79 @@ namespace RiseAndWalk_Android.Views
 
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
-            var view = convertView;
-
-            if (view == null)
-                view = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.list_item, parent, false);
+            if (convertView != null) return convertView;
+            
+            var view = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.list_item, parent, false);
 
             var nfcImage = view.FindViewById<ImageView>(Resource.Id.image_nfc);
             var description = view.FindViewById<TextView>(Resource.Id.text_description);
             var time = view.FindViewById<TextView>(Resource.Id.text_time);
             var daysOfWeek = view.FindViewById<TextView>(Resource.Id.text_dayOfWeek);
             var switchEnabled = view.FindViewById<Android.Support.V7.Widget.SwitchCompat>(Resource.Id.switch_enabled);
+            var switchDeleteAfterRinging = view.FindViewById<Android.Support.V7.Widget.SwitchCompat>(Resource.Id.list_item_switch_delete_after_ringing);
+
 
             var current = Alarms[position];
 
-            nfcImage.Enabled = current.NfcTagHash == null;
+            nfcImage.Visibility = string.IsNullOrEmpty(current.NfcTagHash)? ViewStates.Invisible: ViewStates.Visible;
+
             description.Text = current.Description;
 
             daysOfWeek.Text = current.GetDaysOfWeekString(parent.Context);
             daysOfWeek.Click += delegate
             {
-                if (!_dialogShowed)
-                    ShowDayOfWeekDialog(parent.Context);
+                DialogController.Instance.ShowDayOfWeekDialog(_context, (days =>
+                    {
+                        OnDayOfWeekSet(current, daysOfWeek, days);
+
+                        AlarmStoreController.Instance.UpdateAlarm(current);
+                    }));
             };
 
-            time.Text = current.Time.ToString("hh:mm");
+            time.Text = current.Time.ToString(@"hh\:mm");
             time.Click += delegate
             {
-                if (!_dialogShowed)
-                    ShowTimePickerDialog(parent.Context);
+                DialogController.Instance.ShowTimePickerDialog(_context, ((sender, args) =>
+                {
+                    OnTimeSet(current, time, new TimeSpan(args.HourOfDay, args.Minute, 0));
+
+                    AlarmStoreController.Instance.UpdateAlarm(current);
+                }));
             };
 
+            switchDeleteAfterRinging.Checked = current.DeleteAfterRinging;
+            switchDeleteAfterRinging.CheckedChange += delegate
+            {
+                current.DeleteAfterRinging = switchDeleteAfterRinging.Checked;
+                AlarmStoreController.Instance.UpdateAlarm(current);
+            };
+
+            switchEnabled.Checked = current.Enabled;
             switchEnabled.CheckedChange += delegate
             {
-                Toast.MakeText(parent.Context, $"OnAlarm[{position}]StateChanged", ToastLength.Short).Show();
+                current.Enabled = switchEnabled.Checked;
+                AlarmStoreController.Instance.UpdateAlarm(current);
+                if (switchEnabled.Checked)
+                    AlarmServiceController.Instance.EnableAlarm(parent.Context, current);
+                else
+                    AlarmServiceController.Instance.DisableAlarm(parent.Context, current);
             };
 
             return view;
         }
 
-        private void ShowTimePickerDialog(Context context)
+        private void OnTimeSet(Alarm alarm, TextView timeView, TimeSpan time)
         {
-            _dialogShowed = true;
-            if (_timePickerDialog == null) CreateTimePickerDialog(context);
-
-            _timePickerDialog.Show();
+            alarm.Time = time;
+            timeView.Text = time.ToString("HH:mm");
         }
 
-        private void CreateTimePickerDialog(Context context)
+        private void OnDayOfWeekSet(Alarm alarm, TextView dayOfWeekView, List<int> choosedItems)
         {
-            _timePickerDialog = new TimePickerDialog(
-                context,
-                delegate
-                {
-                    _dialogShowed = false;
-                },
-                DateTime.Now.Hour,
-                DateTime.Now.Minute,
-                true);
+            if (choosedItems.Count > 7) throw new ArgumentException();
 
-            _timePickerDialog.CancelEvent += delegate
-            {
-                _dialogShowed = false;
-            };
-        }
-
-        public void ShowDayOfWeekDialog(Context context)
-        {
-            _dialogShowed = true;
-            if (_dayOfWeekDialog == null) CreateDayOfWeekDialog(context);
-
-            _dayOfWeekDialog.Show();
-        }
-
-        private void CreateDayOfWeekDialog(Context context)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.SetTitle("Choose some animals");
-
-            string[] animals = { "Понедельник", "Писос", "camel", "sheep", "goat" };
-            bool[] checkedItems = { true, false, false, true, false };
-
-            builder.SetMultiChoiceItems(animals, checkedItems, delegate
-            {
-                _dialogShowed = false;
-            });
-
-            builder.SetPositiveButton("OK", delegate { });
-            builder.SetNegativeButton("Cancel", delegate { });
-
-            _dayOfWeekDialog = builder.Create();
-
-            _dayOfWeekDialog.DismissEvent += delegate
-            {
-                _dialogShowed = false;
-            };
+            alarm.DaysOfWeek = choosedItems.Cast<DayOfWeek>().ToArray();
+            dayOfWeekView.Text = alarm.GetDaysOfWeekString(_context);
         }
     }
 }

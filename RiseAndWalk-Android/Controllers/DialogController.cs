@@ -45,14 +45,14 @@ namespace RiseAndWalk_Android.Controllers
         //TODO: Отрефакторить
         private Dialog CreateDayOfWeekDialog(Context context, Action<List<int>> callback)
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            var builder = new AlertDialog.Builder(context);
             builder.SetTitle(Resource.String.choose_day_of_week);
 
             var choosedItems = new List<int>(9);
-            string[] items = new string[9];
+            var items = new string[9];
 
-            bool[] checkedItems = new bool[9];
-            for (int i = 0; i < 8; i++)
+            var checkedItems = new bool[9];
+            for (var i = 0; i < 8; i++)
                 checkedItems[i] = false;
             checkedItems[8] = true;
 

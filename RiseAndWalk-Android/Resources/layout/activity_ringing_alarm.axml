@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+	<TextView 
+		android:layout_width ="match_parent"
+		android:layout_height="wrap_content"
+		android:text ="Звонит будильник!!!"/>
+	<TextView 
+		android:layout_width ="match_parent"
+		android:layout_height="wrap_content"
+		android:text =""
+		android:id="@+id/ringing_alarm_description"/>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		style="@style/Widget.AppCompat.Button.Colored"
+		android:text="Ок, я проснулся"
+		android:id="@+id/ringing_alarm_button_close"
+	/>
+	<TextView 
+		android:layout_width ="match_parent"
+		android:layout_height="wrap_content"
+		android:text ="Поднесите метку, чтобы выключить"
+		android:id="@+id/ringing_alarm_needs_nfc_tag"/>
+	
+</LinearLayout>

@@ -10,6 +10,7 @@ namespace RiseAndWalk_Android.Controllers
         {
             var resultIntent = new Intent(context, typeof(RingingAlarmActivity));
             resultIntent.SetFlags(ActivityFlags.NewTask);
+            resultIntent.PutExtra("alarm", intent.GetBundleExtra("alarm"));
 
             context.StartActivity(resultIntent);
         }

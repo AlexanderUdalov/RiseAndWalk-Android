@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:layout_below="@+id/text_time"
+		android:layout_toRightOf="@+id/text_time"
         android:id="@+id/text_dayOfWeek" />
     <TextView
         android:text="Описание будильника"
@@ -27,8 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 		android:layout_below="@+id/text_time"
-		android:layout_toRightOf ="@+id/text_dayOfWeek"
-        android:id="@+id/text_description" />
+		android:id="@+id/text_description" />
     <ImageView
         android:src="@drawable/nfc"
 		android:layout_width="wrap_content"
@@ -46,5 +45,23 @@
         android:checked="false"
 		android:layout_alignParentRight="true"
         app:showText="false"/>
+	<TextView
+        android:text="Удалить после срабатывания"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_below="@+id/text_description"
+		android:id="@+id/text_delete_after_rinignig" />
+	<android.support.v7.widget.SwitchCompat
+        android:id="@+id/list_item_switch_delete_after_ringing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:checked="false"
+		android:layout_toRightOf="@+id/text_delete_after_rinignig"
+		android:layout_below="@+id/text_description"
+		app:showText="false"/>
 
 </RelativeLayout>
