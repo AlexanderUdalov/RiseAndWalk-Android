@@ -12,10 +12,12 @@ namespace RiseAndWalk_Android.Views
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity, BottomNavigationView.IOnNavigationItemSelectedListener
     {
+        private string _token;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
+            CheckToken();
             CheckRingOutAlarm();
             CheckFirstStart();
 
@@ -27,6 +29,12 @@ namespace RiseAndWalk_Android.Views
             FragmentManager.BeginTransaction()
                 .Add(Resource.Id.fragment_content, new AlarmsFragment())
                 .Commit();
+        }
+
+        private void CheckToken()
+        {
+            _token = PreferenceManager.GetDefaultSharedPreferences(this).GetString("userToken", "");
+            NetworkController.Instance.SetToken(_token);
         }
 
         private void CheckRingOutAlarm()
@@ -68,9 +76,8 @@ namespace RiseAndWalk_Android.Views
                     break;
 
                 case Resource.Id.navigation_account:
-                    var token = PreferenceManager.GetDefaultSharedPreferences(this).GetString("userToken", "");
                     transaction.Replace(Resource.Id.fragment_content,
-                        string.IsNullOrEmpty(token) ? (Fragment)new LoginFragment() : new AccountFragment());
+                        string.IsNullOrEmpty(_token) ? (Fragment)new LoginFragment() : new AccountFragment());
                     break;
             }
 

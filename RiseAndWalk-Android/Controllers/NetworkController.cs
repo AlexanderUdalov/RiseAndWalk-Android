@@ -5,12 +5,16 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Android.Content;
+using Android.Preferences;
 
+//TODO: выделить account controller с контекстом, данный класс только для взаимодействия с сетью
 namespace RiseAndWalk_Android.Controllers
 {
     public class NetworkController
     {
-        private const string AlarmServiceUrl = "https://localhost:44343/api/alarms";
+        private const string AlarmServiceUrl = "http://192.168.43.155:5000/api/alarms";
+        private const string AccountServiceUrl = "http://192.168.43.155:5000/api/account/";
 
         #region Singletone
 
@@ -21,63 +25,72 @@ namespace RiseAndWalk_Android.Controllers
 
         #endregion Singletone
 
-        private HttpClient _client = new HttpClient();
+        private readonly HttpClient _client = new HttpClient();
 
-        private async Task<List<Alarm>> GetAsync()
+        public void SetToken(string token)
         {
-            var response = await _client.GetAsync(AlarmServiceUrl);
-            var stringContent = await response.Content.ReadAsStringAsync();
+            Console.Write(_client.DefaultRequestHeaders?.Authorization?.Scheme);
+            _client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + token);
+
+        }
+
+        public async Task<List<Alarm>> GetAsync()
+        {
+            var response = await _client.GetAsync(AlarmServiceUrl).ConfigureAwait(false);
+            var stringContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return await Task.Run(() =>
                 JsonConvert.DeserializeObject<List<Alarm>>(stringContent) ?? new List<Alarm>());
         }
 
-        private async Task<bool> PostAsync(Alarm alarm)
+        public async Task<bool> PostAsync(Alarm alarm)
         {
             var content = new StringContent(JsonConvert.SerializeObject(alarm), Encoding.UTF8, "application/json");
 
-            var postResponse = await _client.PostAsync(AlarmServiceUrl, content);
+            var postResponse = await _client.PostAsync(AlarmServiceUrl, content).ConfigureAwait(false);
             return postResponse.IsSuccessStatusCode;
         }
 
         public async Task DeleteAsync(Alarm alarm, HttpClient client)
-            => await client.DeleteAsync(AlarmServiceUrl + "/" + alarm.Id);
+            => await client.DeleteAsync(AlarmServiceUrl + "/" + alarm.Id).ConfigureAwait(false);
 
-        private async Task<string> RegisterAsync(UserModel user)
+        public void SaveToken(Context context, string token)
+        {
+            var pref = PreferenceManager.GetDefaultSharedPreferences(context);
+            var prefEditor = pref.Edit();
+            prefEditor.PutString("userToken", token);
+            prefEditor.Commit();
+        }
+
+        public async Task<string> RegisterAsync(UserModel user)
         {
             var stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
-            var postResponse = await _client.PostAsync("https://localhost:44343/api/account/register", stringContent);
+            var postResponse = await _client.PostAsync(AccountServiceUrl + "register", stringContent).ConfigureAwait(false);
 
-            var content = await postResponse.Content.ReadAsStringAsync();
+            var content = await postResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (!postResponse.IsSuccessStatusCode) return null;
 
             var token = content;
-            if (string.IsNullOrEmpty(token)) return null;
-
-            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            return token;
+            return string.IsNullOrEmpty(token) ? null : token;
         }
 
-        private async Task<string> LoginAsync(UserModel user)
+        public async Task<string> LoginAsync(UserModel user)
         {
             var stringContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
 
-            var postResponse = await _client.PostAsync("https://localhost:44343/api/account/login", stringContent);
+            var postResponse = await _client.PostAsync(AccountServiceUrl + "login", stringContent).ConfigureAwait(false);
 
-            var content = await postResponse.Content.ReadAsStringAsync();
+            var content = await postResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (!postResponse.IsSuccessStatusCode) return null;
 
             var token = content;
-            if (string.IsNullOrEmpty(token)) return null;
-
-            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            return token;
+            return string.IsNullOrEmpty(token) ? null : token;
         }
 
-        private bool Logout(HttpClient client)
+        public bool Logout(HttpClient client)
             => client.DefaultRequestHeaders.Remove("Authorization");
     }
 }

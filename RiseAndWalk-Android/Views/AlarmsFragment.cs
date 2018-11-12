@@ -2,10 +2,6 @@
 using Android.Content;
 using Android.OS;
 using Android.Views;
-using Android.Widget;
-using RiseAndWalk_Android.Controllers;
-using System.Linq;
-using SQLite;
 
 namespace RiseAndWalk_Android.Views
 {
@@ -22,11 +18,9 @@ namespace RiseAndWalk_Android.Views
             var fabAddNewAlarm = _view.FindViewById(Resource.Id.fab_add);
             fabAddNewAlarm.Click += delegate { OnAddAlarmClicked(); };
 
-            var alarmsView = _view.FindViewById<ListView>(Resource.Id.alarms_list);
-
-
-            alarmsView.Adapter = GetNewAlarmAdapter();
-            AlarmStoreController.Instance.OnDataStoreChanged += () => alarmsView.Adapter = GetNewAlarmAdapter();
+            FragmentManager.BeginTransaction()
+                .Add(Resource.Id.fragment_alarms_content, new SwipeRefreshFragment())
+                .Commit();
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -36,13 +30,6 @@ namespace RiseAndWalk_Android.Views
         {
             var intent = new Intent(Context, typeof(AddNewAlarmActivity));
             StartActivity(intent);
-        }
-        
-        private AlarmAdapter GetNewAlarmAdapter()
-        {
-            var alarmsList = AlarmStoreController.Instance.GetAlarms();
-
-            return new AlarmAdapter(alarmsList.ToList(), Activity);
         }
     }
 }

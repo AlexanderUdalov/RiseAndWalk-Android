@@ -1,20 +1,22 @@
 ﻿using Android.App;
 using Android.OS;
-using Android.Preferences;
 using Android.Views;
 using Android.Widget;
-using Newtonsoft.Json;
+using RiseAndWalk_Android.Controllers;
+using RiseAndWalk_Android.Models;
 using System;
-using System.Net.Http;
-using System.Text;
 
 namespace RiseAndWalk_Android.Views
 {
     public class LoginFragment : Fragment
     {
         private View _view;
+        private TextView _email;
+        private TextView _password;
 
         public event Action OnCreateCallBack;
+
+        public event Action OnAuthorizedCallBack;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -22,101 +24,50 @@ namespace RiseAndWalk_Android.Views
 
             _view = LayoutInflater.Inflate(Resource.Layout.fragment_login, null);
 
+            _email = _view.FindViewById<TextView>(Resource.Id.fragment_login_email_field);
+            _password = _view.FindViewById<TextView>(Resource.Id.fragment_login_password_field);
+
             var buttonLogin = _view.FindViewById<Button>(Resource.Id.button_login);
-            buttonLogin.Click += delegate { OnLoginClicked(); };
+            buttonLogin.Click += OnLoginClicked;
 
             var buttonRegister = _view.FindViewById<Button>(Resource.Id.button_register);
-            buttonRegister.Click += delegate { OnRegisterClicked(); };
+            buttonRegister.Click += OnRegisterClicked;
 
             OnCreateCallBack?.Invoke();
         }
 
-        public void OnLoginClicked()
+        public async void OnLoginClicked(object sender, EventArgs e)
         {
-            using (var client = new HttpClient())
+            var token = await NetworkController.Instance.LoginAsync(new UserModel
             {
-                Login(client);
+                Email = _email.Text,
+                Password = _password.Text
+            });
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                Toast.MakeText(Context, token, ToastLength.Long);
+                NetworkController.Instance.SetToken(token);
+                NetworkController.Instance.SaveToken(Context, token);
             }
+            OnAuthorizedCallBack?.Invoke();
         }
 
-        public void OnRegisterClicked()
+        public async void OnRegisterClicked(object sender, EventArgs e)
         {
-            using (var client = new HttpClient())
+            var token = await NetworkController.Instance.RegisterAsync(new UserModel
             {
-                Register(client);
-            }
-        }
+                Email = _email.Text,
+                Password = _password.Text
+            });
 
-        private class RegisterData
-        {
-            public string Email;
-            public string Password;
-        }
-
-        private void Register(HttpClient client)
-        {
-            var email = "slasbdhoiash@mail.ru";
-            var password = "A1a2A3$fsd";
-
-            var stringContent = new StringContent(
-                JsonConvert.SerializeObject(
-                    new RegisterData()
-                    {
-                        Email = email,
-                        Password = password
-                    }),
-                Encoding.UTF8,
-                "application/json");
-            //var postResponse = client.GetAsync("https://192.168.3.15:45455/api/test").Result;
-            var postResponse = client.PostAsync("http://192.168.3.15:5000/api/account/register",
-                stringContent).Result;
-
-            Toast.MakeText(_view.Context, "Status code: " + postResponse.StatusCode, ToastLength.Short).Show();
-            var content = postResponse.Content.ReadAsStringAsync().Result;
-
-            if (postResponse.IsSuccessStatusCode)
+            if (!string.IsNullOrEmpty(token))
             {
-                Toast.MakeText(_view.Context, content, ToastLength.Short).Show();
-                var token = content;
-                if (!string.IsNullOrEmpty(token))
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                Toast.MakeText(Context, token, ToastLength.Long);
+                NetworkController.Instance.SetToken(token);
+                NetworkController.Instance.SaveToken(Context, token);
             }
-        }
-
-        private void Login(HttpClient client)
-        {
-            var email = "slasbdhoiash@mail.ru";
-            var password = "A1a2A3$fsd";
-
-            var stringContent = new StringContent(
-                JsonConvert.SerializeObject(
-                    new RegisterData()
-                    {
-                        Email = email,
-                        Password = password
-                    }),
-                Encoding.UTF8,
-                "application/json");
-
-            var postResponse = client.PostAsync("http://192.168.3.15:5000/api/account/login",
-                stringContent).Result;
-
-            Toast.MakeText(_view.Context, "Status code: " + postResponse.StatusCode, ToastLength.Short).Show();
-            var content = postResponse.Content.ReadAsStringAsync().Result;
-
-            if (postResponse.IsSuccessStatusCode)
-            {
-                Toast.MakeText(_view.Context, content, ToastLength.Short).Show();
-                var token = content;
-                if (!string.IsNullOrEmpty(token))
-                {
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                    var prefs = PreferenceManager.GetDefaultSharedPreferences(_view.Context);
-                    var prefsEditor = prefs.Edit();
-                    prefsEditor.PutString("userToken", token);
-                    prefsEditor.Commit();
-                }
-            }
+            OnAuthorizedCallBack?.Invoke();
         }
 
         public void AddCloseButton(Activity closingActivity)

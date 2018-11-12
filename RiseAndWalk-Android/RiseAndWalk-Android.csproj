@@ -79,6 +79,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\NfcActivity.cs" />
     <Compile Include="Views\RingingAlarmActivity.cs" />
+    <Compile Include="Views\SwipeRefreshFragment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -171,6 +172,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\activity_ringing_alarm.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\fragment_swipe_refresh.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

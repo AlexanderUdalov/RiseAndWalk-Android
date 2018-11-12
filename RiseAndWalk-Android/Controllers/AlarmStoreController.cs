@@ -1,6 +1,8 @@
 ﻿using RiseAndWalk_Android.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RiseAndWalk_Android.Controllers
 {
@@ -18,16 +20,32 @@ namespace RiseAndWalk_Android.Controllers
         public Action OnDataStoreChanged;
         private readonly SQLiteDatabase<Alarm> _db = new SQLiteDatabase<Alarm>("UserAlarms");
 
-        public IEnumerable<Alarm> GetAlarms() => _db.Get();
+        public IEnumerable<Alarm> GetAlarms()
+        {
+            return _db.Get();
+        }
+
+        public async Task UpdateStoreAsync()
+        {
+            var newAlarms = await NetworkController.Instance.GetAsync();
+
+            foreach (var alarm in newAlarms)
+            {
+                if (!_db.Update(alarm))
+                    _db.Add(alarm);
+            }
+            OnDataStoreChanged?.Invoke();
+        }
 
         public void AddAlarm(Alarm alarm)
         {
             foreach (var alarm1 in GetAlarms())
             {
-                _db.Delete(alarm1);
+                //_db.Delete(alarm1);
             }
             _db.Add(alarm);
             OnDataStoreChanged?.Invoke();
+            NetworkController.Instance.PostAsync(alarm);
         }
 
         public void DeleteAlarm(Alarm alarm)
