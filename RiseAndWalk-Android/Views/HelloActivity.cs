@@ -16,6 +16,7 @@ namespace RiseAndWalk_Android.Views
 
             var fragment = new LoginFragment();
             fragment.OnCreateCallBack += () => fragment.AddCloseButton(this);
+            fragment.OnAuthorizedCallBack += Finish;
 
             var transaction = FragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.hello_content, fragment, FragmentTag);

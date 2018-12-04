@@ -21,7 +21,8 @@ namespace RiseAndWalk_Android.Controllers
         private Dialog _dayOfWeekPickerDialog;
 
         private bool _dialogShowed = false;
-
+        
+        #region TimePickerDialog
         public void ShowTimePickerDialog(Context context, EventHandler<TimeSetEventArgs> handler)
         {
             if (_dialogShowed) return;
@@ -32,6 +33,24 @@ namespace RiseAndWalk_Android.Controllers
             _timePickerDialog.Show();
         }
 
+        private TimePickerDialog CreateTimePickerDialog(Context context, EventHandler<TimeSetEventArgs> handler)
+        {
+            var dialog = new TimePickerDialog(context, (object sender, TimeSetEventArgs args) =>
+            {
+                handler(sender, args);
+                _dialogShowed = false;
+            }, DateTime.Now.Hour, DateTime.Now.Minute, true);
+
+            dialog.CancelEvent += delegate
+            {
+                _dialogShowed = false;
+            };
+            return dialog;
+        }
+
+        #endregion
+
+        #region DayOfWeekDialog
         public void ShowDayOfWeekDialog(Context context, Action<List<int>> callback)
         {
             if (_dialogShowed) return;
@@ -41,7 +60,6 @@ namespace RiseAndWalk_Android.Controllers
 
             _dayOfWeekPickerDialog.Show();
         }
-
         //TODO: Отрефакторить
         private Dialog CreateDayOfWeekDialog(Context context, Action<List<int>> callback)
         {
@@ -122,19 +140,6 @@ namespace RiseAndWalk_Android.Controllers
             return dayOfWeekPickerDialog;
         }
 
-        private TimePickerDialog CreateTimePickerDialog(Context context, EventHandler<TimeSetEventArgs> handler)
-        {
-            var dialog = new TimePickerDialog(context, (object sender, TimeSetEventArgs args) =>
-            {
-                handler(sender, args);
-                _dialogShowed = false;
-            }, DateTime.Now.Hour, DateTime.Now.Minute, true);
-
-            dialog.CancelEvent += delegate
-            {
-                _dialogShowed = false;
-            };
-            return dialog;
-        }
+        #endregion
     }
 }

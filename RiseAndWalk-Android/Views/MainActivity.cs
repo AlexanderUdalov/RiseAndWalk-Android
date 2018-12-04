@@ -13,6 +13,8 @@ namespace RiseAndWalk_Android.Views
     public class MainActivity : AppCompatActivity, BottomNavigationView.IOnNavigationItemSelectedListener
     {
         private string _token;
+        private Fragment LeftFragment, RightFragment, CenterFragment;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -22,6 +24,10 @@ namespace RiseAndWalk_Android.Views
             CheckFirstStart();
 
             SetContentView(Resource.Layout.activity_main);
+
+            LeftFragment = new AlarmsFragment();
+            CenterFragment = new AlarmsFragment();
+            RightFragment = string.IsNullOrEmpty(_token) ? (Fragment)new LoginFragment() : new AccountFragment();
 
             var navigation = FindViewById<BottomNavigationView>(Resource.Id.navigation);
             navigation.SetOnNavigationItemSelectedListener(this);
@@ -68,16 +74,15 @@ namespace RiseAndWalk_Android.Views
             switch (item.ItemId)
             {
                 case Resource.Id.navigation_alarms:
-                    transaction.Replace(Resource.Id.fragment_content, new AlarmsFragment());
+                    transaction.Replace(Resource.Id.fragment_content, LeftFragment);
                     break;
 
                 case Resource.Id.navigation_time:
-                    transaction.Replace(Resource.Id.fragment_content, new AlarmsFragment());
+                    transaction.Replace(Resource.Id.fragment_content, CenterFragment);
                     break;
 
                 case Resource.Id.navigation_account:
-                    transaction.Replace(Resource.Id.fragment_content,
-                        string.IsNullOrEmpty(_token) ? (Fragment)new LoginFragment() : new AccountFragment());
+                    transaction.Replace(Resource.Id.fragment_content, RightFragment);
                     break;
             }
 

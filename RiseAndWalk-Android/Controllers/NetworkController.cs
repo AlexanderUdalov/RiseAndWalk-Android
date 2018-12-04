@@ -9,12 +9,13 @@ using Android.Content;
 using Android.Preferences;
 
 //TODO: выделить account controller с контекстом, данный класс только для взаимодействия с сетью
+//TODO: вынести константы УРЛов в конфигурационный файл
 namespace RiseAndWalk_Android.Controllers
 {
     public class NetworkController
     {
-        private const string AlarmServiceUrl = "http://192.168.43.155:5000/api/alarms";
-        private const string AccountServiceUrl = "http://192.168.43.155:5000/api/account/";
+        private const string AlarmServiceUrl = "http://91.245.227.120/api/alarms";
+        private const string AccountServiceUrl = "http://91.245.227.120/api/account/";
 
         #region Singletone
 

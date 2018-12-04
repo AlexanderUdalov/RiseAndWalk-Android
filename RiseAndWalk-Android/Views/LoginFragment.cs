@@ -5,14 +5,19 @@ using Android.Widget;
 using RiseAndWalk_Android.Controllers;
 using RiseAndWalk_Android.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Android.Support.Transitions;
 
 namespace RiseAndWalk_Android.Views
 {
     public class LoginFragment : Fragment
     {
         private View _view;
-        private TextView _email;
-        private TextView _password;
+        private EditText _email;
+        private EditText _password;
+
+        private Button _login, _register;
 
         public event Action OnCreateCallBack;
 
@@ -23,21 +28,23 @@ namespace RiseAndWalk_Android.Views
             base.OnCreate(savedInstanceState);
 
             _view = LayoutInflater.Inflate(Resource.Layout.fragment_login, null);
+            
+            _email = _view.FindViewById<EditText>(Resource.Id.fragment_login_email_field);
+            _password = _view.FindViewById<EditText>(Resource.Id.fragment_login_password_field);
 
-            _email = _view.FindViewById<TextView>(Resource.Id.fragment_login_email_field);
-            _password = _view.FindViewById<TextView>(Resource.Id.fragment_login_password_field);
+            _login = _view.FindViewById<Button>(Resource.Id.button_login);
+            _login.Click += OnLoginClicked;
 
-            var buttonLogin = _view.FindViewById<Button>(Resource.Id.button_login);
-            buttonLogin.Click += OnLoginClicked;
-
-            var buttonRegister = _view.FindViewById<Button>(Resource.Id.button_register);
-            buttonRegister.Click += OnRegisterClicked;
-
+            _register = _view.FindViewById<Button>(Resource.Id.button_register);
+            _register.Click += OnRegisterClicked;
+            
             OnCreateCallBack?.Invoke();
         }
 
         public async void OnLoginClicked(object sender, EventArgs e)
         {
+            _register.Enabled = false;
+            _login.Enabled = false;
             var token = await NetworkController.Instance.LoginAsync(new UserModel
             {
                 Email = _email.Text,
@@ -45,16 +52,15 @@ namespace RiseAndWalk_Android.Views
             });
 
             if (!string.IsNullOrEmpty(token))
-            {
-                Toast.MakeText(Context, token, ToastLength.Long);
-                NetworkController.Instance.SetToken(token);
-                NetworkController.Instance.SaveToken(Context, token);
-            }
-            OnAuthorizedCallBack?.Invoke();
+                OnAuthorizationSuccess(token);
+            else
+                OnAuthorizationError();
         }
 
         public async void OnRegisterClicked(object sender, EventArgs e)
         {
+            _register.Enabled = false;
+            _login.Enabled = false;
             var token = await NetworkController.Instance.RegisterAsync(new UserModel
             {
                 Email = _email.Text,
@@ -62,17 +68,32 @@ namespace RiseAndWalk_Android.Views
             });
 
             if (!string.IsNullOrEmpty(token))
-            {
-                Toast.MakeText(Context, token, ToastLength.Long);
-                NetworkController.Instance.SetToken(token);
-                NetworkController.Instance.SaveToken(Context, token);
-            }
+                OnAuthorizationSuccess(token);
+            else
+                OnAuthorizationError();
+        }
+
+        public void OnAuthorizationSuccess(string token)
+        {
+            Toast.MakeText(Context, "Успешно", ToastLength.Short).Show();
+
+            NetworkController.Instance.SetToken(token);
+            NetworkController.Instance.SaveToken(Context, token);
+
             OnAuthorizedCallBack?.Invoke();
+        }
+        
+        public void OnAuthorizationError()
+        {
+            Toast.MakeText(Context, "Ошибка", ToastLength.Short).Show();
+            _password.Error= "Неверный пароль!";
+            _register.Enabled = true;
+            _login.Enabled = true;
         }
 
         public void AddCloseButton(Activity closingActivity)
         {
-            var viewGroup = (RelativeLayout)_view.FindViewById(Resource.Id.login_container);
+            var viewGroup = (RelativeLayout)_view.FindViewById(Resource.Id.fragment_login_container);
 
             Button bt = new Button(_view.Context);
             bt.SetText("Закрыть это", TextView.BufferType.Normal);

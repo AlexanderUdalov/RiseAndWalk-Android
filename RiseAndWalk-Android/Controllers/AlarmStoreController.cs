@@ -31,18 +31,13 @@ namespace RiseAndWalk_Android.Controllers
 
             foreach (var alarm in newAlarms)
             {
-                if (!_db.Update(alarm))
-                    _db.Add(alarm);
+                _db.Add(alarm);
             }
             OnDataStoreChanged?.Invoke();
         }
 
         public void AddAlarm(Alarm alarm)
         {
-            foreach (var alarm1 in GetAlarms())
-            {
-                //_db.Delete(alarm1);
-            }
             _db.Add(alarm);
             OnDataStoreChanged?.Invoke();
             NetworkController.Instance.PostAsync(alarm);

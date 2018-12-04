@@ -6,89 +6,115 @@ using RiseAndWalk_Android.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Android.Support.V7.Widget;
 
 namespace RiseAndWalk_Android.Views
 {
-    internal class AlarmAdapter : BaseAdapter<Alarm>
+    internal class AlarmAdapter : RecyclerView.Adapter
     {
         public List<Alarm> Alarms { get; }
 
-        private readonly Context _context;
-
-        public AlarmAdapter(List<Alarm> alarms, Context context)
+        public class AlarmViewHolder : RecyclerView.ViewHolder
         {
-            Alarms = alarms;
-            _context = context;
+            public ImageView NfcImage { get; set; }
+            public TextView Description { get; set; }
+            public TextView Time { get; set; }
+            public TextView DaysOfWeek { get; set; }
+            public SwitchCompat SwitchEnabled { get; set; }
+            public SwitchCompat SwitchDeleteAfterRinging { get; set; }
+            public Context Context { get; set; }
+
+            public AlarmViewHolder(View view) : base(view)
+            {
+                Context = view.Context;
+                   NfcImage = view.FindViewById<ImageView>(Resource.Id.image_nfc);
+                Description = view.FindViewById<TextView>(Resource.Id.text_description);
+                Time = view.FindViewById<TextView>(Resource.Id.text_time);
+                DaysOfWeek = view.FindViewById<TextView>(Resource.Id.text_dayOfWeek);
+                SwitchEnabled =
+                    view.FindViewById<SwitchCompat>(Resource.Id.switch_enabled);
+                SwitchDeleteAfterRinging =
+                    view.FindViewById<SwitchCompat>(Resource.Id.list_item_switch_delete_after_ringing);
+            }
         }
 
-        public override int Count => Alarms.Count;
-
-        public override Alarm this[int position] => Alarms[position];
-
-        public override long GetItemId(int position) => position;
-
-        public override View GetView(int position, View convertView, ViewGroup parent)
+        public AlarmAdapter(List<Alarm> alarms)
         {
-            if (convertView != null) return convertView;
-            
-            var view = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.list_item, parent, false);
+            Alarms = new List<Alarm>();
+            Alarms.Add(new Alarm
+            {
+                DaysOfWeek =  null,
+                DeleteAfterRinging = true,
+                Description = "pisos"
+            });
+            Alarms.Add(new Alarm
+            {
+                DaysOfWeek = null,
+                DeleteAfterRinging = true,
+                Description = "pisos1"
+            });
+        }
 
-            var nfcImage = view.FindViewById<ImageView>(Resource.Id.image_nfc);
-            var description = view.FindViewById<TextView>(Resource.Id.text_description);
-            var time = view.FindViewById<TextView>(Resource.Id.text_time);
-            var daysOfWeek = view.FindViewById<TextView>(Resource.Id.text_dayOfWeek);
-            var switchEnabled = view.FindViewById<Android.Support.V7.Widget.SwitchCompat>(Resource.Id.switch_enabled);
-            var switchDeleteAfterRinging = view.FindViewById<Android.Support.V7.Widget.SwitchCompat>(Resource.Id.list_item_switch_delete_after_ringing);
-
-
+        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
+        {
+            var alarm = holder as AlarmViewHolder;
             var current = Alarms[position];
 
-            nfcImage.Visibility = string.IsNullOrEmpty(current.NfcTagHash)? ViewStates.Invisible: ViewStates.Visible;
+            alarm.NfcImage.Visibility = string.IsNullOrEmpty(current.NfcTagHash) ? ViewStates.Invisible : ViewStates.Visible;
 
-            description.Text = current.Description;
+            alarm.Description.Text = current.Description;
 
-            daysOfWeek.Text = current.GetDaysOfWeekString(parent.Context);
-            daysOfWeek.Click += delegate
+            alarm.DaysOfWeek.Text = current.GetDaysOfWeekString(alarm.Context);
+            alarm.DaysOfWeek.Click += delegate
             {
-                DialogController.Instance.ShowDayOfWeekDialog(_context, (days =>
+                DialogController.Instance.ShowDayOfWeekDialog(alarm.Context, (days =>
                     {
-                        OnDayOfWeekSet(current, daysOfWeek, days);
+                        OnDayOfWeekSet(current, alarm.DaysOfWeek, days, alarm.Context);
 
                         AlarmStoreController.Instance.UpdateAlarm(current);
                     }));
             };
 
-            time.Text = current.Time.ToString(@"hh\:mm");
-            time.Click += delegate
+            alarm.Time.Text = current.Time.ToString(@"hh\:mm");
+            alarm.Time.Click += delegate
             {
-                DialogController.Instance.ShowTimePickerDialog(_context, ((sender, args) =>
+                DialogController.Instance.ShowTimePickerDialog(alarm.Context, ((sender, args) =>
                 {
-                    OnTimeSet(current, time, new TimeSpan(args.HourOfDay, args.Minute, 0));
+                    OnTimeSet(current, alarm.Time, new TimeSpan(args.HourOfDay, args.Minute, 0));
 
                     AlarmStoreController.Instance.UpdateAlarm(current);
                 }));
             };
 
-            switchDeleteAfterRinging.Checked = current.DeleteAfterRinging;
-            switchDeleteAfterRinging.CheckedChange += delegate
+            alarm.SwitchDeleteAfterRinging.Checked = current.DeleteAfterRinging;
+            alarm.SwitchDeleteAfterRinging.CheckedChange += delegate
             {
-                current.DeleteAfterRinging = switchDeleteAfterRinging.Checked;
+                current.DeleteAfterRinging = alarm.SwitchDeleteAfterRinging.Checked;
                 AlarmStoreController.Instance.UpdateAlarm(current);
             };
 
-            switchEnabled.Checked = current.Enabled;
-            switchEnabled.CheckedChange += delegate
+            alarm.SwitchEnabled.Checked = current.Enabled;
+            alarm.SwitchEnabled.CheckedChange += delegate
             {
-                current.Enabled = switchEnabled.Checked;
+                current.Enabled = alarm.SwitchEnabled.Checked;
                 AlarmStoreController.Instance.UpdateAlarm(current);
-                if (switchEnabled.Checked)
-                    AlarmServiceController.Instance.EnableAlarm(parent.Context, current);
+                if (alarm.SwitchEnabled.Checked)
+                    AlarmServiceController.Instance.EnableAlarm(alarm.Context, current);
                 else
-                    AlarmServiceController.Instance.DisableAlarm(parent.Context, current);
+                    AlarmServiceController.Instance.DisableAlarm(alarm.Context, current);
             };
-
-            return view;
         }
+
+        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
+        {
+            var itemView = LayoutInflater.From(parent.Context)
+                .Inflate(Resource.Layout.list_item, parent, false);
+
+            return new AlarmViewHolder(itemView);
+        }
+
+        public override int ItemCount => Alarms.Count;
+
 
         private void OnTimeSet(Alarm alarm, TextView timeView, TimeSpan time)
         {
@@ -96,12 +122,12 @@ namespace RiseAndWalk_Android.Views
             timeView.Text = time.ToString("HH:mm");
         }
 
-        private void OnDayOfWeekSet(Alarm alarm, TextView dayOfWeekView, List<int> choosedItems)
+        private void OnDayOfWeekSet(Alarm alarm, TextView dayOfWeekView, List<int> choosedItems, Context context)
         {
             if (choosedItems.Count > 7) throw new ArgumentException();
 
             alarm.DaysOfWeek = choosedItems.Cast<DayOfWeek>().ToArray();
-            dayOfWeekView.Text = alarm.GetDaysOfWeekString(_context);
+            dayOfWeekView.Text = alarm.GetDaysOfWeekString(context);
         }
     }
 }
